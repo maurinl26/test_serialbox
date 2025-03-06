@@ -10,16 +10,24 @@
 - Build
 
   ```bash
-  cmake .. -DSERIALBOX_ENABLE_FORTRAN=ON 
-  cmake --build . --target install
+  cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/install/serialbox -DSERIALBOX_ENABLE_C=ON -DSERIALBOX_ENABLE_FORTRAN=ON
+  make install -j8
   ```
+
+## Compilation avec gfortran (sur Atos CEP)
+
+```bash
+cd ./generated
+gfortran test.F90      $SERIALBOX_INSTALL_PATH/lib/libSerialboxFortran.a     $SERIALBOX_INSTALL_PATH/lib/libSerialboxC.a     $SERIALBOX_INSTALL_PATH/lib/libSerialboxCore.a     -lstdc++  -pthread   -DSERIALIZE     -I$HOME/test_serialbox/generated     -o test.bin
+```
+
 
 ## Utilisation du préprocesseur Serialbox
 
 - Variables d'environnement
 
 ```bash
-export SERIALBOX_ROOT=$HOME/.local
+export SERIALBOX_ROOT=$HOME/install/serialbox
 ```
 
 - Exécution du préprocesseur
