@@ -6,28 +6,37 @@ project(test_serialbox
     C
 )
 
-set(Serialbox_ROOT $ENV{SERIALBOX_ROOT})
-set(PPSER_SOURCE_DIR ${CMAKE_SOURCE_DIR}/generated)
-message("Serialbox_ROOT set to ${Serialbox_ROOT}")
 
-set(FFLAGS "-lstdc++17 -DSERIALIZE -I${Serialbox_ROOT}/include")
+set(Serialbox_INSTALL_PATH $ENV{SERIALBOX_INSTALL_PATH})
+set(Serialbox_INCLUDE_DIR ${Serialbox_INSTALL_PATH}/include)
+set(Serialbox_LIB_DIR ${Serialbox_INSTALL_PATH}/lib)
+set(Serialbox_SRC_DIR ${Serialbox_INSTALL_PATH}/src)
+set(PPSER_SOURCE ${Serialbox_INSTALL_PATH}/python/pp_ser/pp_ser.py)
+message("Serialbox_INSTALL_PATH set to ${Serialbox_INSTALL_PATH}")
 
+set(FFLAGS "-lstdc++")
 find_package(Serialbox REQUIRED)
 
-# Execute preprocessor
+# Run pp_ser preprocessor
 execute_process(
-    COMMAND python3 ${Serialbox_ROOT}/python/pp_ser/pp_ser.py ${CMAKE_SOURCE_DIR}/test.F90 --output-dir=${PPSER_SOURCE_DIR}
+        COMMAND python3 ${PPSER_SOURCE} ${CMAKE_SOURCE_DIR}/test.F90 --output-dir=${CMAKE_SOURCE_DIR}/generated
 )
 
-add_executable(test.bin ${PPSER_SOURCE_DIR}/test.F90)
 
-target_link_libraries(test.bin
-    PUBLIC
-    Serialbox::SerialboxFortranStatic
+# Executable
+add_executable(testSerialbox ${CMAKE_SOURCE_DIR}/test.F90)
+
+#include_directories(${Serialbox_INCLUDE_DIR})
+
+target_link_libraries(testSerialbox 
+	PUBLIC
+	Serialbox::SerialboxFortranShared
 )
 
-target_compile_definitions(test.bin
+
+target_compile_definitions(testSerialbox
     PUBLIC
         SERIALIZE=1
 )
+
 
